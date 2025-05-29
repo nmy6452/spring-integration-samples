@@ -128,7 +128,6 @@ public class Application {
 				mqttClientFactory(), "siSampleTopic");
 		adapter.setCompletionTimeout(5000);
 		adapter.setConverter(new DefaultPahoMessageConverter());
-		adapter.setTopicAlias(1);
 		adapter.setQos(1);
 		return adapter;
 	}

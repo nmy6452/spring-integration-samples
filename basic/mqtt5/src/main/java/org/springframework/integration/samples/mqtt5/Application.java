@@ -26,6 +26,7 @@ import org.springframework.boot.autoconfigure.SpringBootApplication;
 import org.springframework.context.annotation.Bean;
 import org.springframework.integration.dsl.IntegrationFlow;
 import org.springframework.integration.dsl.Pollers;
+import org.springframework.integration.endpoint.MessageProducerSupport;
 import org.springframework.integration.handler.LoggingHandler;
 import org.springframework.integration.mqtt.inbound.Mqttv5PahoMessageDrivenChannelAdapter;
 import org.springframework.integration.mqtt.outbound.Mqttv5PahoMessageHandler;
@@ -106,21 +107,8 @@ public class Application {
 	public MessageHandler mqttOutbound() {
 		Mqttv5PahoMessageHandler messageHandler = new Mqttv5PahoMessageHandler(mqttConnectionOptions(), "siSamplePublisher");
 		messageHandler.setAsync(true);
+		messageHandler.setAsyncEvents(true);
 		messageHandler.setDefaultTopic("siSampleTopic");
-
-		// MQTT 5.0 Options
-		messageHandler.setDefaultQos(1); // QoS 1 설정
-		messageHandler.setDefaultRetained(false); // Retained 플래그 (기본 false)
-
-		// MQTT 5.0 Options
-//		Mqtt5PublishBuilderCustomizer customizer = builder -> {
-//			builder.contentType("text/plain"); // 콘텐츠 타입 설정
-//			builder.payloadFormatIndicator(MqttProperties.PayloadFormatIndicator.UTF_8); // Payload Format
-//			builder.userProperties().add("source", "spring-integration"); // User Property 추가
-//		};
-//
-//		messageHandler.setPublishBuilderCustomizer(customizer);
-
 		return messageHandler;
 	}
 
@@ -128,16 +116,7 @@ public class Application {
 
 	@Bean
 	public IntegrationFlow mqttInFlow() {
-
-		//TODO 함수로 빼기
-		Mqttv5PahoMessageDrivenChannelAdapter messageProducer =
-				new Mqttv5PahoMessageDrivenChannelAdapter(mqttConnectionOptions(), "siSampleConsumer", "siSampleTopic");
-		messageProducer.setPayloadType(String.class);
-//		messageProducer.setConverter(new Mqttv5PahoMessageConverter());
-		messageProducer.setManualAcks(true);
-
-
-		return IntegrationFlow.from(messageProducer)
+		return IntegrationFlow.from(mqttInbound())
 				.transform(p -> p + ", received from MQTT")
 				.handle(logger())
 				.get();
@@ -149,16 +128,16 @@ public class Application {
 		return loggingHandler;
 	}
 
-//	@Bean
-//	public MessageProducerSupport mqttInbound() {
-//		// Adapter 생성
-//		Mqttv5PahoMessageDrivenChannelAdapter adapter =
-//				new Mqttv5PahoMessageDrivenChannelAdapter(mqttConnectionOptions(),"siSampleConsumer", "siSampleTopic");
-//		adapter.setCompletionTimeout(5000);
-//		adapter.setMessageConverter(new mqttStringToBytesConverter());
-//		adapter.setQos(1);
-//		return adapter;
-//	}
-
+	@Bean
+	public MessageProducerSupport mqttInbound() {
+		// Adapter 생성
+		Mqttv5PahoMessageDrivenChannelAdapter adapter =
+				new Mqttv5PahoMessageDrivenChannelAdapter(mqttConnectionOptions(),"siSampleConsumer", "siSampleTopic");
+		adapter.setCompletionTimeout(5000);
+		adapter.setPayloadType(String.class);
+		adapter.setMessageConverter(new MqttStringToBytesConverter());
+		adapter.setQos(1);
+		return adapter;
+	}
 
 }
