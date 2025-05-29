@@ -22,11 +22,10 @@ import org.springframework.messaging.converter.AbstractMessageConverter;
 import java.nio.charset.StandardCharsets;
 
 /**
- * Simple byte array to String converter; allowing the character set
- * to be specified.
+ * A simple {@link AbstractMessageConverter} that converts
  *
- * @author Gary Russell
- * @since 2.1
+ * @author nmy6452
+ * @since 5.2
  *
  */
 public class MqttStringToBytesConverter extends AbstractMessageConverter {

@@ -14,12 +14,11 @@
  * limitations under the License.
  */
 
-package org.springframework.integration.samples.mqtt;
+package org.springframework.integration.samples.mqtt5;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.verify;
-import static org.mockito.Mockito.times;
 import static org.springframework.integration.test.mock.MockIntegration.messageArgumentCaptor;
 import static org.springframework.integration.test.mock.MockIntegration.mockMessageHandler;
 
@@ -42,7 +41,7 @@ import org.springframework.messaging.support.GenericMessage;
 import org.springframework.test.context.junit4.SpringRunner;
 
 /**
- * @author Gary Russell
+ * @author nmy6452
  *
  * @since 5.2
  *
@@ -74,7 +73,7 @@ public class ApplicationTest {
 		assertThat(receiveLatch.await(10, TimeUnit.SECONDS)).isTrue();
 		verify(mockMessageHandler).handleMessage(any());
 		assertThat(captor.getValue().getPayload())
-				.isEqualTo("foo sent to MQTT, received from MQTT");
+				.isEqualTo("foo sent to MQTT5, received from MQTT5");
 	}
 
 }

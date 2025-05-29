@@ -38,7 +38,7 @@ import java.nio.charset.StandardCharsets;
 /**
  * Starts the Spring Context and will initialize the Spring Integration message flow.
  *
- * @author Gary Russell
+ * @author nmy6452
  *
  */
 @SpringBootApplication
@@ -64,7 +64,7 @@ public class Application {
 
 		LOGGER.info("\n========================================================="
 				+ "\n                                                          "
-				+ "\n    This is the MQTT Sample -                             "
+				+ "\n    This is the MQTT5 Sample -                            "
 				+ "\n                                                          "
 				+ "\n    Please enter some text and press return. The entered  "
 				+ "\n    Message will be sent to the configured MQTT topic,    "
@@ -82,13 +82,6 @@ public class Application {
 		options.setServerURIs(new String[]{ "tcp://localhost:1883" });
 		options.setUserName("guest");
 		options.setPassword("guest".getBytes(StandardCharsets.UTF_8));
-
-		// MQTT 5.0 Options
-		options.setSessionExpiryInterval(60L);
-		options.setMaximumPacketSize(1024L * 1024L);
-		options.setReceiveMaximum(10);
-		options.setRequestResponseInfo(true);
-		options.setTopicAliasMaximum(10);
 		return options;
 	}
 
@@ -98,7 +91,7 @@ public class Application {
 	public IntegrationFlow mqttOutFlow() {
 		return IntegrationFlow.from(CharacterStreamReadingMessageSource.stdin(),
 						e -> e.poller(Pollers.fixedDelay(1000)))
-				.transform(p -> p + " sent to MQTT")
+				.transform(p -> p + " sent to MQTT5")
 				.handle(mqttOutbound())
 				.get();
 	}
@@ -117,7 +110,7 @@ public class Application {
 	@Bean
 	public IntegrationFlow mqttInFlow() {
 		return IntegrationFlow.from(mqttInbound())
-				.transform(p -> p + ", received from MQTT")
+				.transform(p -> p + ", received from MQTT5")
 				.handle(logger())
 				.get();
 	}
@@ -130,7 +123,6 @@ public class Application {
 
 	@Bean
 	public MessageProducerSupport mqttInbound() {
-		// Adapter 생성
 		Mqttv5PahoMessageDrivenChannelAdapter adapter =
 				new Mqttv5PahoMessageDrivenChannelAdapter(mqttConnectionOptions(),"siSampleConsumer", "siSampleTopic");
 		adapter.setCompletionTimeout(5000);

@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-package org.springframework.integration.samples.mqtt;
+package org.springframework.integration.samples.mqtt5;
 
 import static org.junit.Assume.assumeNoException;
 import static org.junit.Assume.assumeTrue;
@@ -24,16 +24,16 @@ import java.util.Map;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
-import org.eclipse.paho.client.mqttv3.IMqttClient;
-import org.eclipse.paho.client.mqttv3.MqttException;
+import org.eclipse.paho.mqttv5.client.IMqttClient;
+import org.eclipse.paho.mqttv5.client.MqttClient;
+import org.eclipse.paho.mqttv5.common.MqttException;
 import org.junit.rules.TestWatcher;
 import org.junit.runner.Description;
 import org.junit.runners.model.Statement;
 
-import org.springframework.integration.mqtt.core.DefaultMqttPahoClientFactory;
 
 /**
- * @author Gary Russell
+ * @author nmy6452
  *
  * @since 5.2
  *
@@ -58,7 +58,7 @@ public class BrokerRunning extends TestWatcher {
 		String url = "tcp://localhost:" + port;
 		IMqttClient client = null;
 		try {
-			client = new DefaultMqttPahoClientFactory().getClientInstance(url, "junit-" + System.currentTimeMillis());
+			client = new MqttClient(url, "junit-" + System.currentTimeMillis());
 			client.connect();
 		}
 		catch (MqttException e) {
